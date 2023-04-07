@@ -19,24 +19,28 @@ app.use(bodyParser.json());
 // set up a new wa-automate-nodejs client
 clientSessions = {};
 app.get('/qrcode/:number',(req,res)=>{
-    create({
-      sessionId: req.params.number,
-      
-    }).then((client) => {
-      clientSessions[req.params.number] = client;
-      // start(client);
-      res.send("Phone Connected");
-    });
+  let res = false
+  create({
+    sessionId: req.params.number,
+    useChrome: true,
+    executablePath: '/usr/bin/google-chrome-stable', // change path as required
+  }).then((client) => {
+    clientSessions[req.params.number] = client;
+    // start(client);
+    if (!res)
+    res.send("Phone Connected"); // check to disable this on sending qr code
+  });
 
-    ev.on("qr.**", async (qrcode) => {
-      // console.log("QR RECEIVED", qrcode);
-      const imageBuffer = Buffer.from(
-        qrcode.replace("data:image/png;base64,", ""),
-        "base64"
-      );
-      fs.writeFileSync("qr.png", imageBuffer);
-      res.sendFile(__dirname + "/qr.png");
-    });
+  ev.on("qr.**", async (qrcode) => {
+    // console.log("QR RECEIVED", qrcode);
+    const imageBuffer = Buffer.from(
+      qrcode.replace("data:image/png;base64,", ""),
+      "base64"
+    );
+    fs.writeFileSync("qr.png", imageBuffer);
+    res = true
+    res.sendFile(__dirname + "/qr.png");
+  });
 
   // return res.send(imageBuffer)
 })
@@ -128,7 +132,7 @@ app.post('/sendfile', upload.single('file'), async (req, res) => {
 
   // if image is not present in the request, return an error
   if (!req.file) {
-    return res.status(400).send('No image in the request');
+    return res.status(400).send('No file in the request');
   } else {
     // send the file to the WhatsApp chat
     // console.log(req.file)
@@ -139,6 +143,33 @@ app.post('/sendfile', upload.single('file'), async (req, res) => {
     }).catch((erro) => {
       console.error("Error when sending: ", erro); //return object error
       res.send("File Not Sent")
+    });
+  }
+})
+
+app.post('/sendvideo', upload.single('file'), async (req, res) => {
+  console.log(req.body)
+  const {caption, phonenumber, sessionId} = req.body;
+  // console.log(req.body)
+  // var caption="test"
+  // var phonenumber="923335662534@c.us"
+  // var sessionId="03115843266"
+  const fileUrl = "data:"+req.file.mimetype+";base64,"+req.file.buffer.toString('base64');
+
+  console.log(req.file)
+
+  if (!req.file) {
+    return res.status(400).send('No video in the request');
+  } else {
+    // send the file to the WhatsApp chat
+    // console.log(req.file)
+    const client = clientSessions[sessionId]
+    client.sendFile(phonenumber+"@c.us", fileUrl, req.file.originalname , caption).then((result) => {
+      console.log("Result: ", result); //return object success
+      res.send("video Sent")
+    }).catch((erro) => {
+      console.error("Error when sending: ", erro); //return object error
+      res.send("video Not Sent")
     });
   }
 })
@@ -157,4 +188,4 @@ app.post('/sendfile', upload.single('file'), async (req, res) => {
 // });
 
 // start the Express app
-app.listen(3003, () => console.log('Server running on port 3000'));
+app.listen(3004, () => console.log('Server running on port 3000'));
