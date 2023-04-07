@@ -1,0 +1,6 @@
+2023/04/07-04:02:58.223 d64 Creating DB /home/devnode/Downloads/Whatsapp_project/Whatsapp-automate/WhatsApp_Automate/_IGNORE_014788552/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb since it was missing.
+2023/04/07-04:02:58.314 d64 Reusing MANIFEST /home/devnode/Downloads/Whatsapp_project/Whatsapp-automate/WhatsApp_Automate/_IGNORE_014788552/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2023/04/07-04:02:58.604 d78 Level-0 table #5: started
+2023/04/07-04:02:58.639 d78 Level-0 table #5: 7376 bytes OK
+2023/04/07-04:02:58.721 d78 Delete type=0 #3
+2023/04/07-04:02:58.721 d78 Manual compaction at level-0 from '\x00\x01\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x02\x00\x00\x00' @ 0 : 0; will stop at (end)
