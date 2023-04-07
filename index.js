@@ -19,7 +19,11 @@ app.use(bodyParser.json());
 // set up a new wa-automate-nodejs client
 clientSessions = {};
 app.get('/qrcode/:number',(req,res)=>{
+<<<<<<< HEAD
   let check = false;
+=======
+  let result = false
+>>>>>>> ecaf6b1eed2532c63be0f61e610c0c7fe27ac946
   create({
     sessionId: req.params.number,
     useChrome: true,
@@ -27,7 +31,12 @@ app.get('/qrcode/:number',(req,res)=>{
   }).then((client) => {
     clientSessions[req.params.number] = client;
     // start(client);
+<<<<<<< HEAD
     if (!check) res.send("Phone Connected"); // check to disable this on sending qr code
+=======
+    if (!result)
+    return res.send("Phone Connected"); // check to disable this on sending qr code
+>>>>>>> ecaf6b1eed2532c63be0f61e610c0c7fe27ac946
   });
 
   ev.on("qr.**", async (qrcode) => {
@@ -37,7 +46,11 @@ app.get('/qrcode/:number',(req,res)=>{
       "base64"
     );
     fs.writeFileSync("qr.png", imageBuffer);
+<<<<<<< HEAD
     check = true
+=======
+    result = true
+>>>>>>> ecaf6b1eed2532c63be0f61e610c0c7fe27ac946
     res.sendFile(__dirname + "/qr.png");
   });
 
