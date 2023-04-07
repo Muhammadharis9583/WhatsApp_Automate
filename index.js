@@ -19,16 +19,15 @@ app.use(bodyParser.json());
 // set up a new wa-automate-nodejs client
 clientSessions = {};
 app.get('/qrcode/:number',(req,res)=>{
-  let res = false
+  let check = false;
   create({
     sessionId: req.params.number,
     useChrome: true,
-    executablePath: '/usr/bin/google-chrome-stable', // change path as required
+    // executablePath: '/usr/bin/google-chrome-stable', // change path as required
   }).then((client) => {
     clientSessions[req.params.number] = client;
     // start(client);
-    if (!res)
-    res.send("Phone Connected"); // check to disable this on sending qr code
+    if (!check) res.send("Phone Connected"); // check to disable this on sending qr code
   });
 
   ev.on("qr.**", async (qrcode) => {
@@ -38,7 +37,7 @@ app.get('/qrcode/:number',(req,res)=>{
       "base64"
     );
     fs.writeFileSync("qr.png", imageBuffer);
-    res = true
+    check = true
     res.sendFile(__dirname + "/qr.png");
   });
 
@@ -173,6 +172,13 @@ app.post('/sendvideo', upload.single('file'), async (req, res) => {
     });
   }
 })
+app.get("/recieved/:session", (req, res) => {
+  const client = clientSessions[req.params.session];
+  client.onMessage((message) => {
+    console.log(message.body);
+    res.send(message.body);
+  });
+});
 
 // set up an Express route to generate a QR code
 // app.get('/qrcode/:phoneNumber', async (req, res) => {
