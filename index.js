@@ -19,39 +19,13 @@ app.use(bodyParser.json());
 // set up a new wa-automate-nodejs client
 clientSessions = {};
 app.get('/qrcode/:number',(req,res)=>{
-    function start(client) {
-      // console.log("Client is ready!");
-      // client.getAllChats().then((chats) => {
-      //   console.log("Total chats: ", chats.length);
-      // });
-      const message = "HELLO WORLD"
-      const to = "923335662534@c.us"
-      client.sendText(to, message).then((result) => {
-        console.log("Result: ", result); //return object success
-      }).catch((erro) => {
-        console.error("Error when sending: ", erro); //return object error
-      });
-      // client.onMessage(async (message) => {
-      //   // await client.sendText(phoneNumber, "Sunna bhai kessa ha🐐");
-      //   if (message.body.toLowerCase() === "hi") {
-      //     await client.sendText(message.from, "Hello 🐐");
-      //   } else if (message.body.toLowerCase() === "demo") {
-      //     await client.sendText(message.from, "Demo hi ha abi");
-      //   }
-      // });
-    }
     create({
       sessionId: req.params.number,
       
     }).then((client) => {
       clientSessions[req.params.number] = client;
       // start(client);
-    });
-
-    //if session exists then send 'ok' to client
-    ev.on("session.data", async (session) => {
-      // console.log("session.data", session);
-      res.send("ok");
+      res.send("Phone Connected");
     });
 
     ev.on("qr.**", async (qrcode) => {
@@ -101,12 +75,11 @@ app.post('/sendmssg/:session', async (req, res) => {
 
 app.post('/sendImg', upload.single('image'),async (req, res) => {
   const {caption, phonenumber, sessionId} = req.body;
-  // console.log(req.body)
-  // var caption="test"
-  // var phonenumber="923335662534@c.us"
-  // var sessionId="03115843266"
+  // // var caption="test"
+  // // var phonenumber="923335662534@c.us"
+  // // var sessionId="03115843266"
   const imgUrl = "data:"+req.file.mimetype+";base64,"+req.file.buffer.toString('base64');
-  // //const imgUrl = "https://fastly.picsum.photos/id/791/536/354.jpg?hmac=eXUPs7QLTn9HF78YkhAz85vtEsUXj2aePprZoTCwCdU";
+  // // //const imgUrl = "https://fastly.picsum.photos/id/791/536/354.jpg?hmac=eXUPs7QLTn9HF78YkhAz85vtEsUXj2aePprZoTCwCdU";
 
   // if image is not present in the request, return an error
   if (!req.file) {
@@ -144,6 +117,32 @@ app.post('/bulksend', async (req, res) => {
 
 })
 
+app.post('/sendfile', upload.single('file'), async (req, res) => {
+  console.log(req.body)
+  const {caption, phonenumber, sessionId} = req.body;
+  // console.log(req.body)
+  // var caption="test"
+  // var phonenumber="923335662534@c.us"
+  // var sessionId="03115843266"
+  const fileUrl = "data:"+req.file.mimetype+";base64,"+req.file.buffer.toString('base64');
+
+  // if image is not present in the request, return an error
+  if (!req.file) {
+    return res.status(400).send('No image in the request');
+  } else {
+    // send the file to the WhatsApp chat
+    // console.log(req.file)
+    const client = clientSessions[sessionId]
+    client.sendFile(phonenumber+"@c.us", fileUrl, req.file.originalname , caption).then((result) => {
+      console.log("Result: ", result); //return object success
+      res.send("File Sent")
+    }).catch((erro) => {
+      console.error("Error when sending: ", erro); //return object error
+      res.send("File Not Sent")
+    });
+  }
+})
+
 // set up an Express route to generate a QR code
 // app.get('/qrcode/:phoneNumber', async (req, res) => {
 //   // get the phone number from the request parameters
@@ -158,4 +157,4 @@ app.post('/bulksend', async (req, res) => {
 // });
 
 // start the Express app
-app.listen(3002, () => console.log('Server running on port 3000'));
+app.listen(3003, () => console.log('Server running on port 3000'));
