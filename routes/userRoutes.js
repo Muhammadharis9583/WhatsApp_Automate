@@ -1,22 +1,26 @@
 var express = require("express");
 var router = express.Router();
 const multer = require("multer");
-const { qrcode, sendMessage, sendImage, sendBulk, sendFile, sendVideo, recievedMessage, test } = require("../controllers/Qrcode");
+const { qrcode, sendMessage, sendImage, sendBulk, sendFile, sendVideo, recievedMessage, test, getSessions, removeSessions } = require("../controllers/Qrcode");
 const upload = multer({});
 
 router.get("/qrcode/:number",qrcode );
 
 router.get("/test",test);
 
+router.get("/getSessions", getSessions);
+
+router.post("/removeAllSessions", removeSessions)
+
 router.post("/send/:session", sendMessage);
 
-router.post("/sendImg/:session", upload.single("image"),sendImage);
+router.post("/sendImg/:sessionId", upload.single("image"),sendImage);
 
-router.post("/bulksend/:session", sendBulk);
+router.post("/bulksend/:sessionId", sendBulk);
 
-router.post("/sendfile/:session", upload.single("file"),sendFile );
+router.post("/sendfile/:sessionId", upload.single("file"),sendFile );
 
-router.post("/sendvideo/:session", upload.single("file"), sendVideo);
+router.post("/sendvideo/:sessionId", upload.single("file"), sendVideo);
 
 router.get("/recieved/:session", recievedMessage);
 module.exports = router;

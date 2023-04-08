@@ -1,7 +1,11 @@
 const { create, Client, ev } = require("@open-wa/wa-automate");
 const fs = require("fs");
+const path = require("path");
 var fileupload = require("express-fileupload");
-clientSessions = {};
+const multer = require("multer");
+const upload = multer({});
+
+let clientSessions = {};
 
 const qrcode = (req, res) => {
   let check = false;
@@ -23,7 +27,7 @@ const qrcode = (req, res) => {
     );
     fs.writeFileSync("qr.png", imageBuffer);
     check = true;
-    res.sendFile(__dirname + "/qr.png");
+    res.sendFile(path.join(__dirname +"/../qr.png"));
   });
 };
 
@@ -39,7 +43,7 @@ const sendMessage = async (req, res) => {
       .sendText(countrycode + to + "@c.us", message)
       .then((result) => {
         console.log("Result: ", result); //return object success
-        res.status(200).send("Message Sent to " + phonenumber);
+        res.status(200).send("Message Sent to " + to);
       })
       .catch((erro) => {
         console.error("Error when sending: ", erro); //return object error
@@ -180,10 +184,22 @@ const recievedMessage = (req, res) => {
     res.send(message.body);
   });
 };
+
 const test = (req, res) => {
   // send sessions object
   res.send({ test: true });
   //   res.send(clientSessions);
+};
+
+const getSessions = (req, res) => {
+  // send sessions object
+  res.send(clientSessions);
+};
+
+const removeSessions = (req, res) => {
+  // send sessions object
+  clientSessions = {};
+  res.send(clientSessions);
 };
 
 module.exports = {
@@ -194,5 +210,7 @@ module.exports = {
   sendBulk,
   sendImage,
   sendMessage,
-  qrcode
+  qrcode,
+  getSessions,
+  removeSessions
 };
