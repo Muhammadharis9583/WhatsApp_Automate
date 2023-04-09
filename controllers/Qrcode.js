@@ -12,7 +12,8 @@ const qrcode = (req, res) => {
   create({
     sessionId: req.params.number,
     useChrome: true,
-    executablePath: '/usr/bin/google-chrome-stable', // change path as required
+    executablePath: '/usr/bin/google-chrome-stable', // for linux
+    // executablePath: 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe', // for windows
   }).then((client) => {
     clientSessions[req.params.number] = client;
     // start(client);
